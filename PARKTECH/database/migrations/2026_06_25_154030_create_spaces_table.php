@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('spaces', function (Blueprint $table) {
-            $table->id('id_space'); 
+            $table->id('id'); 
             $table->string('numero_space');
             $table->string('tipo_space');
             $table->string('estado')->default('Libre');

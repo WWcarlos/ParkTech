@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('parking_registers', function (Blueprint $table) {
-            $table->id('id_registro');
+            $table->id('id');
             $table->foreignId('id_vehiculo')->constrained('vehicles', 'id_vehiculo')->onDelete('cascade');
             $table->foreignId('id_space')->constrained('spaces', 'id_space')->onDelete('cascade');
             $table->foreignId('id_tarifa')->constrained('tariffs', 'id_tarifa')->onDelete('cascade');

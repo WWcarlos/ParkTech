@@ -9,6 +9,6 @@ class Space extends Model
 {
     public function parkingRegisters(): HasMany
     {
-        return $this->hasMany(ParkingRegister::class, 'id_space', 'id_space');
+        return $this->hasMany(ParkingRegister::class);
     }
 }
