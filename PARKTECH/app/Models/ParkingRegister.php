@@ -10,16 +10,16 @@ class ParkingRegister extends Model
 
     public function vehicle(): BelongsTo
     {
-        return $this->belongsTo(Vehicle::class, 'id_vehiculo', 'id_vehiculo');
+        return $this->belongsTo(Vehicle::class);
     }
 
     public function space(): BelongsTo
     {
-        return $this->belongsTo(Space::class, 'id_space', 'id_space');
+        return $this->belongsTo(Space::class);
     }
 
     public function tariff(): BelongsTo
     {
-        return $this->belongsTo(Tariff::class, 'id_tarifa', 'id_tarifa');
+        return $this->belongsTo(Tariff::class);
     }
 }

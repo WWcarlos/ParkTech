@@ -9,6 +9,6 @@ class Vehicle extends Model
 {
     public function parkingRegisters(): HasMany
     {
-        return $this->hasMany(ParkingRegister::class, 'id_vehiculo', 'id_vehiculo');
+        return $this->hasMany(ParkingRegister::class);
     }
 }

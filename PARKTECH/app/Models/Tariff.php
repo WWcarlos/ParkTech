@@ -9,6 +9,6 @@ class Tariff extends Model
 {
     public function parkingRegisters(): HasMany
     {
-        return $this->hasMany(ParkingRegister::class, 'id_tarifa', 'id_tarifa');
+        return $this->hasMany(ParkingRegister::class);
     }
 }
