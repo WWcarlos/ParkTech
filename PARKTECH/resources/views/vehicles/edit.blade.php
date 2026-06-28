@@ -7,34 +7,25 @@
 </head>
 <body>
     <table>
-        <form action="{{route('vehicles.update', $vehicle->id)}}" method="post">
+        <form action="{{ route('vehicles.update', $vehicle->id) }}" method="post">
             @csrf
             @method('put')
-                <div>
-                    <label for="placa">Placa</label>
-                    <input type="text" id="placa" name="placa" value="{{$vehicle->placa}}">
-                </div>
-                <div>
-                    <label for="tipo_vehiculo">Tipo de vehiculo</label>
-                    <input type="text" id="tipo_vehiculo" name="tipo_vehiculo" value="{{$vehicle->tipo_vehiculo}}">
-                </div>
-                <div>
-                    <label for="marca">Marca</label>
-                    <input type="text" id="marca" name="marca" value="{{$vehicle->marca}}">
-                </div>                
-                <div>
-                    <label for="color">Color</label>
-                    <input type="text" id="color" name="color" value="{{$vehicle->color}}">
-                </div>
-                <div>
-                    <label for="propietario">Propietario</label>
-                    <input type="text" id="propietario" name="propietario" value="{{$vehicle->propietario}}">
-                </div>
-                <div>
-                    <label for="telefono">Telefono</label>
-                    <input type="text" id="telefono" name="telefono" value="{{$vehicle->telefono}}">
-                </div>
-                <button type="submit" class="btn btn-success btn-sm">Guardar Cambios</button>        
+            <div>
+                <label for="plate">Placa</label>
+                <input type="text" id="plate" name="plate" value="{{ $vehicle->plate }}" required>
+            </div>
+
+            <div>
+                <label for="vehicle_type_id">Tipo de vehiculo</label>
+                <select id="vehicle_type_id" name="vehicle_type_id" required>
+                    @foreach ($vehicleTypes as $type)
+                        <option value="{{ $type->id }}" {{ $vehicle->vehicle_type_id == $type->id ? 'selected' : '' }}>
+                            {{ $type->name }} (Minuto: ${{ $type->rate_per_minute }})
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            <button type="submit" class="btn btn-success btn-sm">Guardar Cambios</button>
         </form>
     </table>
 </body>

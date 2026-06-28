@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPEDOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -6,28 +6,22 @@
     <title>Document</title>
 </head>
 <body>
-     <table>
+    <table>
         <thead>
-            <th>Placa</th>
-            <th>Tipo de vehiculo</th>
-            <th>marca</th>
-            <th>color</th>
-            <th>propietario</th>
-            <th>telefono</th>
-            <th>Opciones</th>
+            <tr>
+                <th>Placa</th>
+                <th>Tipo de Vehiculo</th>
+                <th>Opciones</th>
+            </tr>
         </thead>
         <tbody>
             @foreach ($vehicles as $vehicle)
                 <tr>
-                    <td>{{$vehicle->placa}}</td>
-                    <td>{{$vehicle->tipo_vehiculo}}</td>
-                    <td>{{$vehicle->marca}}</td>
-                    <td>{{$vehicle->color}}</td>
-                    <td>{{$vehicle->propietario}}</td>
-                    <td>{{$vehicle->telefono}}</td>
+                    <td>{{ $vehicle->plate }}</td>
+                    <td>{{ $vehicle->vehicleType->name }}</td>
                     <td>
-                        <a href="{{route('vehicles.edit', $vehicle->id)}}" class="btn btn-warning btn-sm">Editar</a>
-                        <form action="{{route('vehicles.destroy', $vehicle->id)}}" method="post">
+                        <a href="{{ route('vehicles.edit', $vehicle->id) }}" class="btn btn-warning btn-sm">Editar</a>
+                        <form action="{{ route('vehicles.destroy', $vehicle->id) }}" method="post">
                             @csrf
                             @method('delete')
                             <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
@@ -35,34 +29,24 @@
                     </td>
                 </tr>
             @endforeach
-
-            <form action="{{route('vehicles.store')}}" method="post">
+            <form action="{{ route('vehicles.store') }}" method="post">
                 @csrf
                 <div>
-                    <label for="placa">Placa</label>
-                    <input type="text" id="placa" name="placa">
+                    <label for="plate">Placa</label>
+                    <input type="text" id="plate" name="plate" required>
                 </div>
+
                 <div>
-                    <label for="tipo_vehiculo">Tipo de vehiculo</label>
-                    <input type="text" id="tipo_vehiculo" name="tipo_vehiculo">
-                </div>
-                <div>
-                    <label for="marca">Marca</label>
-                    <input type="text" id="marca" name="marca">
-                </div>                
-                <div>
-                    <label for="color">Color</label>
-                    <input type="text" id="color" name="color">
-                </div>
-                <div>
-                    <label for="propietario">Propietario</label>
-                    <input type="text" id="propietario" name="propietario">
-                </div>
-                <div>
-                    <label for="telefono">Telefono</label>
-                    <input type="text" id="telefono" name="telefono">
+                    <label for="vehicle_type_id">Tipo de vehiculo</label>
+                    <select id="vehicle_type_id" name="vehicle_type_id" required>
+                        <option value="">Seleccione un tipo...</option>
+                        @foreach ($vehicleTypes as $type)
+                            <option value="{{ $type->id }}">{{ $type->name }} (Minuto: ${{ $type->rate_per_minute }})</option>
+                        @endforeach
+                    </select>
                 </div>
                 <button type="submit" class="btn btn-success btn-sm">Guardar</button>
+            </form>
         </tbody>
     </table>
 </body>
