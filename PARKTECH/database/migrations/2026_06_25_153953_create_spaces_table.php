@@ -11,13 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('daily_reports', function (Blueprint $table) {
-            $table->id('id');
-            $table->date('fecha_reporte');
-            $table->decimal('total_ingresos', 10, 2);
-            $table->integer('total_vehiculos');
-            $table->integer('cupos_ocupados');
-            $table->integer('cupos_disponibles');
+        Schema::create('spaces', function (Blueprint $table) {
+            $table->id();
+            $table->string('code', 20)->unique();
+            $table->foreignId('vehicle_type_id')->constrained('vehicle_types')->cascadeOnDelete();      
+            $table->enum('status', ['FREE', 'OCCUPIED', 'MAINTENANCE'])->default('FREE');
             $table->timestamps();
         });
     }
@@ -27,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('daily_reports');
+        Schema::dropIfExists('spaces');
     }
 };

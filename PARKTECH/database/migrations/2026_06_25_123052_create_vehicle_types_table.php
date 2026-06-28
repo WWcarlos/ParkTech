@@ -11,11 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('spaces', function (Blueprint $table) {
-            $table->id('id'); 
-            $table->string('numero_space');
-            $table->string('tipo_space');
-            $table->string('estado')->default('Libre');
+        Schema::create('vehicle_types', function (Blueprint $table) {
+            $table->id();
+            $table->string('name', 100);
+            $table->decimal('rate_per_minute', 10, 2);
             $table->timestamps();
         });
     }
@@ -25,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('spaces');
+        Schema::dropIfExists('vehicle_types');
     }
 };

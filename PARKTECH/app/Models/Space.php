@@ -4,11 +4,17 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Space extends Model
 {
-    public function parkingRegisters(): HasMany
+    public function vehicleType(): BelongsTo
     {
-        return $this->hasMany(ParkingRegister::class);
+        return $this->belongsTo(VehicleType::class);
+    }
+
+    public function parkingRecords(): HasMany
+    {
+        return $this->hasMany(ParkingRecord::class);
     }
 }

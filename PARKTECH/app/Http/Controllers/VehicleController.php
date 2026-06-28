@@ -4,24 +4,27 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Vehicle;
+use App\Models\VehicleType;
 
 class VehicleController extends Controller
 {
-   public function index()
+    public function index()
     {
-        $vehicles = Vehicle::all();
-        return view('vehicles.index', compact('vehicles'));
+        $vehicles = Vehicle::with('vehicleType')->get();
+        $vehicleTypes = VehicleType::all();
+        return view('vehicles.index', compact('vehicles', 'vehicleTypes'));
     }
 
     public function store(Request $request)
     {
+        $request->validate([
+            'plate' => 'required|unique:vehicles,plate',
+            'vehicle_type_id' => 'required|exists:vehicle_types,id',
+        ]);
+
         $vehicle = new Vehicle;
-        $vehicle->placa = $request->placa;
-        $vehicle->tipo_vehiculo = $request->tipo_vehiculo;
-        $vehicle->marca = $request->marca;
-        $vehicle->color = $request->color;
-        $vehicle->propietario = $request->propietario;
-        $vehicle->telefono = $request->telefono;
+        $vehicle->plate = $request->plate;
+        $vehicle->vehicle_type_id = $request->vehicle_type_id;
         $vehicle->save();
         return redirect()->route('vehicles.index');
     }
@@ -29,19 +32,23 @@ class VehicleController extends Controller
     public function edit(string $id)
     {
         $vehicle = Vehicle::find($id);
-        return view('vehicles.edit', compact('vehicle'));
+        $vehicleTypes = VehicleType::all();   
+        return view('vehicles.edit', compact('vehicle', 'vehicleTypes'));
     }
 
     public function update(Request $request, string $id)
     {
         $vehicle = Vehicle::find($id);
-        $vehicle->placa = $request->placa;
-        $vehicle->tipo_vehiculo = $request->tipo_vehiculo;
-        $vehicle->marca = $request->marca;
-        $vehicle->color = $request->color;
-        $vehicle->propietario = $request->propietario;
-        $vehicle->telefono = $request->telefono;
+
+        $request->validate([
+            'plate' => 'required|unique:vehicles,plate,' . $vehicle->id,
+            'vehicle_type_id' => 'required|exists:vehicle_types,id',
+        ]);
+
+        $vehicle->plate = $request->plate;
+        $vehicle->vehicle_type_id = $request->vehicle_type_id;
         $vehicle->save();
+
         return redirect()->route('vehicles.index');  
     }
 
@@ -49,6 +56,7 @@ class VehicleController extends Controller
     {
         $vehicle = Vehicle::find($id);
         $vehicle->delete();
+
         return redirect()->route('vehicles.index');
     }
 }

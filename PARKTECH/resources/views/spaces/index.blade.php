@@ -3,25 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Gestión de Espacios</title>
 </head>
 <body>
-     <table>
+    <table>
         <thead>
-            <th>Número de espacio</th>
-            <th>Tipo de espacio</th>
-            <th>estado</th>
-            <th>Opciones</th>
+            <tr>
+                <th>Código de Espacio</th>
+                <th>Tipo de Vehículo Asignado</th>
+                <th>Estado Actual</th>
+                <th>Opciones</th>
+            </tr>
         </thead>
         <tbody>
             @foreach ($spaces as $space)
                 <tr>
-                    <td>{{$space->numero_space}}</td>
-                    <td>{{$space->tipo_space}}</td>
-                    <td>{{$space->estado}}</td>
+                    <td>{{ $space->code }}</td>
+                    <td>{{ $space->vehicleType->name }}</td>
+                    <td>{{ $space->status }}</td>
                     <td>
-                        <a href="{{route('spaces.edit', $space->id)}}" class="btn btn-warning btn-sm">Editar</a>
-                        <form action="{{route('spaces.destroy', $space->id)}}" method="post">
+                        <a href="{{ route('spaces.edit', $space->id) }}" class="btn btn-warning btn-sm">Editar</a>
+                        
+                        <form action="{{ route('spaces.destroy', $space->id) }}" method="post">
                             @csrf
                             @method('delete')
                             <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
@@ -29,22 +32,34 @@
                     </td>
                 </tr>
             @endforeach
-
-            <form action="{{route('spaces.store')}}" method="post">
+            <form action="{{ route('spaces.store') }}" method="post">
                 @csrf
                 <div>
-                    <label for="numero_space">Numero de espacio</label>
-                    <input type="text" id="numero_space" name="num_space">
+                    <label for="code">Código de Espacio</label>
+                    <input type="text" id="code" name="code" placeholder="Ej: A-01" required>
                 </div>
+
                 <div>
-                    <label for="tipo_space">Tipo de espacio</label>
-                    <input type="text" id="tipo_space" name="tipo_space">
+                    <label for="vehicle_type_id">Tipo de Vehículo Permitido</label>
+                    <select id="vehicle_type_id" name="vehicle_type_id" required>
+                        <option value="">Seleccione un tipo...</option>
+                        @foreach ($vehicleTypes as $type)
+                            <option value="{{ $type->id }}">{{ $type->name }}</option>
+                        @endforeach
+                    </select>
                 </div>
+
                 <div>
-                    <label for="estado">Estado</label>
-                    <input type="text" id="estado" name="estado">
+                    <label for="status">Estado Inicial</label>
+                    <select id="status" name="status" required>
+                        <option value="FREE" selected>FREE (Disponible)</option>
+                        <option value="OCCUPIED">OCCUPIED (Ocupado)</option>
+                        <option value="MAINTENANCE">MAINTENANCE (Mantenimiento)</option>
+                    </select>
                 </div>
-                <button type="submit" class="btn btn-success btn-sm">Guardar</button>
+
+                <button type="submit" class="btn btn-success btn-sm">Guardar Espacio</button>
+            </form>
         </tbody>
     </table>
 </body>
