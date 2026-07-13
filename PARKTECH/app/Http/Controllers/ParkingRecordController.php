@@ -3,22 +3,29 @@
 namespace App\Http\Controllers;
 
 use App\Models\ParkingRecord;
+use App\Models\Vehicle;
+use App\Models\User;
+use App\Models\Space;
 use Illuminate\Http\Request;
 
 class ParkingRecordController extends Controller
 {
     /**
-     * Mostrar todos los registros.
+     * Mostrar la lista de registros.
      */
     public function index()
     {
-        $parkingRecords = ParkingRecord::with([
-            'vehicle',
-            'user',
-            'space'
-        ])->get();
+        $parkingRecords = ParkingRecord::with(['vehicle', 'user', 'space'])->get();
+        $vehicles = Vehicle::all();
+        $users = User::all();
+        $spaces = Space::all();
 
-        return response()->json($parkingRecords);
+        return view('parking_records.index', compact(
+            'parkingRecords',
+            'vehicles',
+            'users',
+            'spaces'
+        ));
     }
 
     /**
@@ -26,7 +33,7 @@ class ParkingRecordController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        $request->validate([
             'vehicle_id'   => 'required|exists:vehicles,id',
             'user_id'      => 'required|exists:users,id',
             'space_id'     => 'required|exists:spaces,id',
@@ -36,26 +43,28 @@ class ParkingRecordController extends Controller
             'status'       => 'required|in:ACTIVE,COMPLETED',
         ]);
 
-        $parkingRecord = ParkingRecord::create($validated);
+        ParkingRecord::create($request->all());
 
-        return response()->json([
-            'message' => 'Registro creado correctamente.',
-            'data' => $parkingRecord
-        ], 201);
+        return redirect()->route('parking-records.index')
+            ->with('success', 'Registro creado correctamente.');
     }
 
     /**
-     * Mostrar un registro específico.
+     * Mostrar el formulario de edición.
      */
-    public function show(string $id)
+    public function edit(string $id)
     {
-        $parkingRecord = ParkingRecord::with([
-            'vehicle',
-            'user',
-            'space'
-        ])->findOrFail($id);
+        $parkingRecord = ParkingRecord::findOrFail($id);
+        $vehicles = Vehicle::all();
+        $users = User::all();
+        $spaces = Space::all();
 
-        return response()->json($parkingRecord);
+        return view('parking_records.edit', compact(
+            'parkingRecord',
+            'vehicles',
+            'users',
+            'spaces'
+        ));
     }
 
     /**
@@ -65,22 +74,20 @@ class ParkingRecordController extends Controller
     {
         $parkingRecord = ParkingRecord::findOrFail($id);
 
-        $validated = $request->validate([
-            'vehicle_id'   => 'sometimes|exists:vehicles,id',
-            'user_id'      => 'sometimes|exists:users,id',
-            'space_id'     => 'sometimes|exists:spaces,id',
-            'entry_time'   => 'sometimes|date',
+        $request->validate([
+            'vehicle_id'   => 'required|exists:vehicles,id',
+            'user_id'      => 'required|exists:users,id',
+            'space_id'     => 'required|exists:spaces,id',
+            'entry_time'   => 'required|date',
             'exit_time'    => 'nullable|date|after_or_equal:entry_time',
             'total_amount' => 'nullable|numeric|min:0',
-            'status'       => 'sometimes|in:ACTIVE,COMPLETED',
+            'status'       => 'required|in:ACTIVE,COMPLETED',
         ]);
 
-        $parkingRecord->update($validated);
+        $parkingRecord->update($request->all());
 
-        return response()->json([
-            'message' => 'Registro actualizado correctamente.',
-            'data' => $parkingRecord
-        ]);
+        return redirect()->route('parking-records.index')
+            ->with('success', 'Registro actualizado correctamente.');
     }
 
     /**
@@ -92,8 +99,7 @@ class ParkingRecordController extends Controller
 
         $parkingRecord->delete();
 
-        return response()->json([
-            'message' => 'Registro eliminado correctamente.'
-        ]);
+        return redirect()->route('parking-records.index')
+            ->with('success', 'Registro eliminado correctamente.');
     }
 }
