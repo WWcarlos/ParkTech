@@ -3,17 +3,32 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ParkingRecord extends Model
 {
-    public function spaces(): HasMany
+    protected $fillable = [
+        'vehicle_id',
+        'user_id',
+        'space_id',
+        'entry_time',
+        'exit_time',
+        'total_amount',
+        'status',
+    ];
+
+    public function vehicle(): BelongsTo
     {
-        return $this->hasMany(Space::class);
+        return $this->belongsTo(Vehicle::class);
     }
 
-    public function vehicles(): HasMany
+    public function user(): BelongsTo
     {
-        return $this->hasMany(Vehicle::class);
+        return $this->belongsTo(User::class);
+    }
+
+    public function space(): BelongsTo
+    {
+        return $this->belongsTo(Space::class);
     }
 }
