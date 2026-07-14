@@ -4,86 +4,161 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Usuario</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
+<body class="bg-light">
 
-    <h1>Editar Usuario</h1>
+<div class="container py-5">
 
-    <table>
-        <form action="{{ route('users.update', $user->id) }}" method="POST">
-            @csrf
-            @method('PUT')
+    <div class="row justify-content-center">
 
-            <div>
-                <label for="name">Nombre</label>
-                <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    value="{{ $user->name }}"
-                    required
-                >
+        <div class="col-md-7">
+
+            <div class="card shadow">
+
+                <div class="card-header bg-warning">
+                    <h3 class="text-center mb-0">
+                        ✏️ Editar Usuario
+                    </h3>
+                </div>
+
+                <div class="card-body">
+
+                    <form action="{{ route('users.update', $user->id) }}" method="POST">
+
+                        @csrf
+                        @method('PUT')
+
+                        <div class="mb-3">
+                            <label class="form-label">
+                                Nombre
+                            </label>
+
+                            <input
+                                type="text"
+                                name="name"
+                                class="form-control"
+                                value="{{ $user->name }}"
+                                required>
+                        </div>
+
+                        <div class="mb-3">
+
+                            <label class="form-label">
+                                Correo Electrónico
+                            </label>
+
+                            <input
+                                type="email"
+                                name="email"
+                                class="form-control"
+                                value="{{ $user->email }}"
+                                required>
+
+                        </div>
+
+                        <div class="mb-3">
+
+                            <label class="form-label">
+                                Nueva Contraseña
+                            </label>
+
+                            <input
+                                type="password"
+                                name="password"
+                                class="form-control"
+                                placeholder="Dejar en blanco para conservar la actual">
+
+                            <small class="text-muted">
+                                Solo escriba una contraseña si desea cambiarla.
+                            </small>
+
+                        </div>
+
+                        <div class="mb-3">
+
+                            <label class="form-label">
+                                Rol
+                            </label>
+
+                            <select
+                                name="role"
+                                class="form-select"
+                                required>
+
+                                <option value="ADMIN"
+                                    {{ $user->role == 'ADMIN' ? 'selected' : '' }}>
+                                    Administrador
+                                </option>
+
+                                <option value="OPERADOR"
+                                    {{ $user->role == 'OPERADOR' ? 'selected' : '' }}>
+                                    Operador
+                                </option>
+
+                                <option value="USER"
+                                    {{ $user->role == 'USER' ? 'selected' : '' }}>
+                                    Usuario
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                        <div class="mb-4">
+
+                            <label class="form-label">
+                                Estado
+                            </label>
+
+                            <select
+                                name="is_active"
+                                class="form-select"
+                                required>
+
+                                <option value="1"
+                                    {{ $user->is_active ? 'selected' : '' }}>
+                                    Activo
+                                </option>
+
+                                <option value="0"
+                                    {{ !$user->is_active ? 'selected' : '' }}>
+                                    Inactivo
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+
+                            <a href="{{ route('users.index') }}"
+                               class="btn btn-secondary">
+                                ← Volver
+                            </a>
+
+                            <button
+                                type="submit"
+                                class="btn btn-success">
+
+                                💾 Guardar Cambios
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
             </div>
 
-            <div>
-                <label for="email">Correo Electrónico</label>
-                <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    value="{{ $user->email }}"
-                    required
-                >
-            </div>
+        </div>
 
-            <div>
-                <label for="password">Nueva Contraseña</label>
-                <input
-                    type="password"
-                    id="password"
-                    name="password"
-                    placeholder="Dejar en blanco para conservar la actual"
-                >
-            </div>
+    </div>
 
-            <div>
-                <label for="role">Rol</label>
-
-                <select id="role" name="role" required>
-                    <option value="ADMIN" {{ $user->role == 'ADMIN' ? 'selected' : '' }}>
-                        Administrador
-                    </option>
-
-                    <option value="OPERADOR" {{ $user->role == 'OPERADOR' ? 'selected' : '' }}>
-                        Operador
-                    </option>
-
-                    <option value="USER" {{ $user->role == 'USER' ? 'selected' : '' }}>
-                        Usuario
-                    </option>
-                </select>
-            </div>
-
-            <div>
-                <label for="is_active">Estado</label>
-
-                <select id="is_active" name="is_active" required>
-                    <option value="1" {{ $user->is_active ? 'selected' : '' }}>
-                        Activo
-                    </option>
-
-                    <option value="0" {{ !$user->is_active ? 'selected' : '' }}>
-                        Inactivo
-                    </option>
-                </select>
-            </div>
-
-            <button type="submit">
-                Guardar Cambios
-            </button>
-
-        </form>
-    </table>
+</div>
 
 </body>
 </html>

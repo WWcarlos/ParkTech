@@ -4,124 +4,263 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Usuarios</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
+<body class="bg-light">
 
-    <h1>Gestión de Usuarios</h1>
+<div class="container py-5">
 
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>Correo Electrónico</th>
-                <th>Rol</th>
-                <th>Estado</th>
-                <th>Opciones</th>
-            </tr>
-        </thead>
+    <h2 class="text-center mb-4">
+        👥 Gestión de Usuarios
+    </h2>
 
-        <tbody>
+    {{-- Formulario --}}
+    <div class="card shadow mb-5">
 
-            @foreach ($users as $user)
-                <tr>
-                    <td>{{ $user->name }}</td>
-                    <td>{{ $user->email }}</td>
-                    <td>{{ $user->role }}</td>
-                    <td>
-                        @if($user->is_active)
-                            Activo
-                        @else
-                            Inactivo
-                        @endif
-                    </td>
-
-                    <td>
-                        <a href="{{ route('users.edit', $user->id) }}">
-                            Editar
-                        </a>
-
-                        <form action="{{ route('users.destroy', $user->id) }}" method="POST">
-                            @csrf
-                            @method('DELETE')
-
-                            <button type="submit">
-                                Eliminar
-                            </button>
-                        </form>
-                    </td>
-                </tr>
-            @endforeach
-
-        </tbody>
-    </table>
-
-    <hr>
-
-    <h2>Registrar Usuario</h2>
-
-    <form action="{{ route('users.store') }}" method="POST">
-
-        @csrf
-
-        <div>
-            <label for="name">Nombre</label>
-            <input
-                type="text"
-                id="name"
-                name="name"
-                required
-            >
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Registrar Nuevo Usuario</h5>
         </div>
 
-        <div>
-            <label for="email">Correo Electrónico</label>
-            <input
-                type="email"
-                id="email"
-                name="email"
-                required
-            >
+        <div class="card-body">
+
+            <form action="{{ route('users.store') }}" method="POST">
+
+                @csrf
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Nombre</label>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            name="name"
+                            required>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            Correo Electrónico
+                        </label>
+
+                        <input
+                            type="email"
+                            class="form-control"
+                            name="email"
+                            required>
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            Contraseña
+                        </label>
+
+                        <input
+                            type="password"
+                            class="form-control"
+                            name="password"
+                            required>
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            Rol
+                        </label>
+
+                        <select
+                            class="form-select"
+                            name="role"
+                            required>
+
+                            <option value="">Seleccione...</option>
+                            <option value="ADMIN">Administrador</option>
+                            <option value="OPERADOR">Operador</option>
+                            <option value="USER">Usuario</option>
+
+                        </select>
+
+                    </div>
+
+                    <div class="col-12">
+
+                        <div class="form-check">
+
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                name="is_active"
+                                id="is_active"
+                                value="1"
+                                checked>
+
+                            <label
+                                class="form-check-label"
+                                for="is_active">
+
+                                Usuario Activo
+
+                            </label>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <button class="btn btn-success mt-3">
+                    Guardar Usuario
+                </button>
+
+            </form>
+
         </div>
 
-        <div>
-            <label for="password">Contraseña</label>
-            <input
-                type="password"
-                id="password"
-                name="password"
-                required
-            >
+    </div>
+
+    {{-- Tabla --}}
+    <div class="card shadow">
+
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0">Listado de Usuarios</h5>
         </div>
 
-        <div>
-            <label for="role">Rol</label>
+        <div class="card-body">
 
-            <select id="role" name="role" required>
-                <option value="">Seleccione...</option>
-                <option value="ADMIN">Administrador</option>
-                <option value="OPERADOR">Operador</option>
-                <option value="USER">Usuario</option>
-            </select>
+            <div class="table-responsive">
+
+                <table class="table table-hover table-bordered align-middle">
+
+                    <thead class="table-primary">
+
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Correo</th>
+                            <th>Rol</th>
+                            <th>Estado</th>
+                            <th width="180">Acciones</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        @forelse($users as $user)
+
+                            <tr>
+
+                                <td>{{ $user->id }}</td>
+
+                                <td>{{ $user->name }}</td>
+
+                                <td>{{ $user->email }}</td>
+
+                                <td>
+
+                                    @if($user->role == 'ADMIN')
+
+                                        <span class="badge bg-danger">
+                                            Administrador
+                                        </span>
+
+                                    @elseif($user->role == 'OPERADOR')
+
+                                        <span class="badge bg-warning text-dark">
+                                            Operador
+                                        </span>
+
+                                    @else
+
+                                        <span class="badge bg-info">
+                                            Usuario
+                                        </span>
+
+                                    @endif
+
+                                </td>
+
+                                <td>
+
+                                    @if($user->is_active)
+
+                                        <span class="badge bg-success">
+                                            Activo
+                                        </span>
+
+                                    @else
+
+                                        <span class="badge bg-secondary">
+                                            Inactivo
+                                        </span>
+
+                                    @endif
+
+                                </td>
+
+                                <td>
+
+                                    <a
+                                        href="{{ route('users.edit',$user->id) }}"
+                                        class="btn btn-warning btn-sm">
+
+                                        Editar
+
+                                    </a>
+
+                                    <form
+                                        action="{{ route('users.destroy',$user->id) }}"
+                                        method="POST"
+                                        class="d-inline">
+
+                                        @csrf
+                                        @method('DELETE')
+
+                                        <button
+                                            onclick="return confirm('¿Desea eliminar este usuario?')"
+                                            class="btn btn-danger btn-sm">
+
+                                            Eliminar
+
+                                        </button>
+
+                                    </form>
+
+                                </td>
+
+                            </tr>
+
+                        @empty
+
+                            <tr>
+
+                                <td colspan="6" class="text-center">
+
+                                    No existen usuarios registrados.
+
+                                </td>
+
+                            </tr>
+
+                        @endforelse
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
         </div>
 
-        <div>
-            <label for="is_active">
-                <input
-                    type="checkbox"
-                    id="is_active"
-                    name="is_active"
-                    value="1"
-                    checked
-                >
-                Usuario Activo
-            </label>
-        </div>
+    </div>
 
-        <button type="submit">
-            Guardar Usuario
-        </button>
-
-    </form>
+</div>
 
 </body>
 </html>
