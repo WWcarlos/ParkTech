@@ -1,58 +1,97 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🚗 ParkTech
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+> Sistema de Parqueadero Inteligente desarrollado para la asignatura **Ingeniería de Software I** de la **Universidad Nacional de Colombia – Sede Manizales**.
 
-## About Laravel
+ParkTech es una aplicación web diseñada para gestionar las operaciones básicas de un parqueadero mediante el registro de vehículos, el control de entradas y salidas, la administración de usuarios, la gestión de espacios disponibles y el cálculo automático de tarifas según el tipo de vehículo y el tiempo de permanencia.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 👥 Integrantes
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+* **Salomé Arroyave Urrea**
+* **Cristian Alexander Bermúdez Correa**
+* **Carlos Francisco Moreno Casas**
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## 📚 Información del Proyecto
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+| Elemento | Información |
+| :--- | :--- |
+| **Proyecto** | ParkTech |
+| **Asignatura** | Ingeniería de Software I |
+| **Universidad** | Universidad Nacional de Colombia – Sede Manizales |
+| **Arquitectura** | Monolítica (MVC) |
+| **Framework** | Laravel |
+| **Base de datos** | MySQL |
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+---
 
-## Agentic Development
+## 🎯 Objetivo
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+Desarrollar una aplicación web que permita administrar eficientemente un parqueadero mediante el control de usuarios, vehículos, espacios de parqueo y registros de ingreso y salida, automatizando el cálculo de tarifas y facilitando la gestión administrativa.
 
-```bash
-composer require laravel/boost --dev
+---
 
-php artisan boost:install
-```
+## ✨ Funcionalidades
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+El sistema cuenta con los siguientes módulos:
 
-## Contributing
+* 🔐 **Autenticación:** Control de acceso y roles de usuarios.
+* 👤 **Gestión de usuarios:** Administración de cuentas del personal.
+* 🚗 **Gestión de vehículos:** Registro y control de datos de vehículos.
+* 🚙 **Tipos de vehículo:** Clasificación para tarifas personalizadas.
+* 🅿️ **Espacios de parqueo:** Control de plazas disponibles en tiempo real.
+* 📥 **Registro de ingresos:** Control y asignación de espacio al entrar.
+* 📤 **Registro de salidas:** Control de egreso de vehículos.
+* 💰 **Tarifación:** Cálculo automático según el tiempo transcurrido.
+* 📊 **Cupos:** Visualización del estado del parqueadero.
+* 📄 **Reportes:** Generación de información administrativa.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+---
 
-## Code of Conduct
+## 🛠 Tecnologías Utilizadas
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+| Tecnología | Descripción |
+| :--- | :--- |
+| **Laravel** | Framework de desarrollo web (PHP) |
+| **PHP** | Lenguaje de programación del lado del servidor |
+| **MySQL** | Sistema gestor de base de datos |
+| **Bootstrap 5** | Framework para el diseño de la interfaz gráfica |
+| **HTML5 & CSS3** | Estructura y diseño de las vistas |
+| **JavaScript** | Dinamismo y funcionalidades del lado del cliente |
+| **Git & GitHub** | Control de versiones y repositorio |
+| **Composer** | Gestor de dependencias de PHP |
+| **Laragon** | Entorno de desarrollo local recomendado |
 
-## Security Vulnerabilities
+---
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## 🏛 Arquitectura
 
-## License
+ParkTech fue desarrollado utilizando una **arquitectura monolítica**, implementando el patrón **Modelo-Vista-Controlador (MVC)** proporcionado por Laravel. 
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Esta estructura separa de forma clara la lógica de negocio, la interfaz de usuario y el acceso a la base de datos, facilitando el mantenimiento y la escalabilidad del sistema.
+
+---
+
+## 📂 Estructura del Proyecto
+
+```text
+PARKTECH
+├── app/
+├── bootstrap/
+├── config/
+├── database/
+├── public/
+├── resources/
+│   ├── css/
+│   ├── js/
+│   └── views/
+├── routes/
+├── storage/
+├── tests/
+├── .env.example
+├── artisan
+├── composer.json
+├── package.json
+└── README.md
