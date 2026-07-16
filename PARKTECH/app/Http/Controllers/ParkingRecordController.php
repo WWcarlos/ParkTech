@@ -20,13 +20,20 @@ class ParkingRecordController extends Controller
         $parkingRecords = ParkingRecord::with(['vehicle', 'user', 'space'])->get();
         $vehicles = Vehicle::all();
         $users = User::all();
-        $spaces = Space::all();
+        $spaces = Space::where('status', 'FREE')->get();
+
+        $totalSpaces = Space::count();
+        $occupiedSpaces = Space::where('status', 'OCCUPIED')->count();
+        $freeSpaces = Space::where('status', 'FREE')->count();
 
         return view('parking_records.index', compact(
             'parkingRecords',
             'vehicles',
             'users',
-            'spaces'
+            'spaces',
+            'totalSpaces',     
+            'occupiedSpaces',   
+            'freeSpaces'        
         ));
     }
 
@@ -40,12 +47,29 @@ class ParkingRecordController extends Controller
             'user_id'      => 'required|exists:users,id',
             'space_id'     => 'required|exists:spaces,id',
             'entry_time'   => 'required|date',
-            'exit_time'    => 'nullable|date|after_or_equal:entry_time',
-            'total_amount' => 'nullable|numeric|min:0',
             'status'       => 'required|in:ACTIVE,COMPLETED',
         ]);
 
-        ParkingRecord::create($request->all());
+        $freeSpacesCount = Space::where('status', 'FREE')->count();
+        if ($freeSpacesCount === 0) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'No es posible registrar el ingreso: El parqueadero está lleno.');
+        }
+
+        $selectedSpace = Space::findOrFail($request->space_id);
+        if ($selectedSpace->status !== 'FREE') {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'El espacio seleccionado (' . $selectedSpace->code . ') ya se encuentra ocupado.');
+        }
+
+        DB::transaction(function () use ($request, $selectedSpace) {
+            ParkingRecord::create($request->all());
+
+            $selectedSpace->status = 'OCCUPIED';
+            $selectedSpace->save();
+        });
 
         return redirect()->route('parking-records.index')
             ->with('success', 'Registro creado correctamente.');

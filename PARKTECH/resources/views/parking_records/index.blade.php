@@ -17,12 +17,51 @@
         </div>
 
         <div class="card-body">
+            <div class="card-body">
 
             @if(session('success'))
                 <div class="alert alert-success">
                     {{ session('success') }}
                 </div>
             @endif
+
+            <!-- NUEVO: Alerta en caso de error (como parqueadero lleno) -->
+            @if(session('error'))
+                <div class="alert alert-danger">
+                    {{ session('error') }}
+                </div>
+            @endif
+
+            <!-- RF-15: Tarjetas de Control de Cupos -->
+            <h5 class="mb-3">Control de Cupos</h5>
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="card bg-success text-white text-center shadow-sm">
+                        <div class="card-body">
+                            <h6 class="card-title">Cupos Disponibles</h6>
+                            <h2 class="display-6 font-weight-bold">{{ $freeSpaces }}</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-danger text-white text-center shadow-sm">
+                        <div class="card-body">
+                            <h6 class="card-title">Cupos Ocupados</h6>
+                            <h2 class="display-6 font-weight-bold">{{ $occupiedSpaces }}</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-secondary text-white text-center shadow-sm">
+                        <div class="card-body">
+                            <h6 class="card-title">Capacidad Total</h6>
+                            <h2 class="display-6 font-weight-bold">{{ $totalSpaces }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr>
 
             <h5 class="mb-3">Nuevo Registro</h5>
 
