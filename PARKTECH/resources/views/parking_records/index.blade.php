@@ -58,7 +58,7 @@
                         <select name="space_id" class="form-control" required>
                             @foreach($spaces as $space)
                                 <option value="{{ $space->id }}">
-                                    {{ $space->space_number }}
+                                    {{ $space->code }}
                                 </option>
                             @endforeach
                         </select>
@@ -74,7 +74,7 @@
 
                         <select name="status" class="form-control">
                             <option value="ACTIVE">ACTIVE</option>
-                            <option value="COMPLETED">COMPLETED</option>
+                            <!-- <option value="COMPLETED">COMPLETED</option> -->
                         </select>
                     </div>
 
@@ -103,7 +103,7 @@
                     <th>Salida</th>
                     <th>Estado</th>
                     <th>Total</th>
-                    <th width="170">Acciones</th>
+                    <th width="250">Acciones</th>
                 </tr>
 
                 </thead>
@@ -120,7 +120,7 @@
 
                         <td>{{ $record->user->name }}</td>
 
-                        <td>{{ $record->space->space_number }}</td>
+                        <td>{{ $record->space->code }}</td>
 
                         <td>{{ $record->entry_time }}</td>
 
@@ -131,25 +131,33 @@
                         <td>$ {{ $record->total_amount }}</td>
 
                         <td>
+                            <!-- Botón Dar Salida (Solo si está activo) -->
+                            @if($record->status === 'ACTIVE')
+                                <form action="{{ route('parking-records.checkout', $record->id) }}" 
+                                    method="POST" 
+                                    style="display:inline">
+                                    @csrf
+                                    @method('PUT')
+                                    <button class="btn btn-success btn-sm">
+                                        Dar Salida
+                                    </button>
+                                </form>
+                            @endif
 
-                            <a href="{{ route('parking-records.edit',$record->id) }}"
-                               class="btn btn-warning btn-sm">
+                            <a href="{{ route('parking-records.edit', $record->id) }}"
+                            class="btn btn-warning btn-sm">
                                 Editar
                             </a>
 
-                            <form action="{{ route('parking-records.destroy',$record->id) }}"
-                                  method="POST"
-                                  style="display:inline">
-
+                            <form action="{{ route('parking-records.destroy', $record->id) }}"
+                                method="POST"
+                                style="display:inline">
                                 @csrf
                                 @method('DELETE')
-
                                 <button class="btn btn-danger btn-sm">
                                     Eliminar
                                 </button>
-
                             </form>
-
                         </td>
 
                     </tr>
