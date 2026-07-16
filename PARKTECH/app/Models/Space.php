@@ -8,6 +8,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Space extends Model
 {
+    protected $fillable = [
+        'code',
+        'vehicle_type_id',
+        'status', // <-- Agrega 'status' en esta lista
+    ];
+    
     public function vehicleType(): BelongsTo
     {
         return $this->belongsTo(VehicleType::class);
