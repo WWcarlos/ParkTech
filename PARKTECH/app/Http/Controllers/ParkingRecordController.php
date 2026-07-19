@@ -9,6 +9,7 @@ use App\Models\Space;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ParkingRecordController extends Controller
 {
@@ -188,5 +189,24 @@ class ParkingRecordController extends Controller
 
         return redirect()->route('parking-records.index')
             ->with('success', 'Salida registrada correctamente. Tarifa calculada.');
+    }
+
+    /**
+     * Generar reporte en PDF de los registros actuales (Solo ADMIN).
+     */
+    public function generatePdfReport()
+    {
+        // Traemos todos los registros con sus relaciones para el reporte
+        $parkingRecords = ParkingRecord::with(['vehicle', 'user', 'space'])->get();
+        
+        // Contadores básicos para el encabezado del reporte
+        $totalRecords = $parkingRecords->count();
+        $totalRevenue = $parkingRecords->sum('total_amount');
+
+        // Cargamos una vista exclusiva para el diseño del PDF
+        $pdf = Pdf::loadView('parking_records.report-pdf', compact('parkingRecords', 'totalRecords', 'totalRevenue'));
+        
+        // Descarga el archivo automáticamente con la fecha actual
+        return $pdf->download('reporte-parqueadero-' . date('Y-m-d') . '.pdf');
     }
 }
