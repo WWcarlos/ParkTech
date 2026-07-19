@@ -13,9 +13,6 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class ParkingRecordController extends Controller
 {
-    /**
-     * Mostrar la lista de registros.
-     */
     public function index()
     {
         $parkingRecords = ParkingRecord::with(['vehicle', 'user', 'space'])->get();
@@ -23,24 +20,12 @@ class ParkingRecordController extends Controller
         $users = User::all();
         $spaces = Space::where('status', 'FREE')->get();
 
-        $totalSpaces = Space::count();
-        $occupiedSpaces = Space::where('status', 'OCCUPIED')->count();
-        $freeSpaces = Space::where('status', 'FREE')->count();
-
-        return view('parking_records.index', compact(
-            'parkingRecords',
-            'vehicles',
-            'users',
-            'spaces',
-            'totalSpaces',     
-            'occupiedSpaces',   
-            'freeSpaces'        
+        return view('parking_records.index', array_merge(
+            compact('parkingRecords', 'vehicles', 'users', 'spaces'),
+            $this->getSpaceMetrics()
         ));
     }
 
-    /**
-     * Guardar un nuevo registro.
-     */
     public function store(Request $request)
     {
         $request->validate([
@@ -51,23 +36,15 @@ class ParkingRecordController extends Controller
             'status'       => 'required|in:ACTIVE,COMPLETED',
         ]);
 
-        $freeSpacesCount = Space::where('status', 'FREE')->count();
-        if ($freeSpacesCount === 0) {
-            return redirect()->back()
-                ->withInput()
-                ->with('error', 'No es posible registrar el ingreso: El parqueadero está lleno.');
+        $validationError = $this->validateSpaceAvailability($request->space_id);
+        if ($validationError) {
+            return redirect()->back()->withInput()->with('error', $validationError);
         }
 
-        $selectedSpace = Space::findOrFail($request->space_id);
-        if ($selectedSpace->status !== 'FREE') {
-            return redirect()->back()
-                ->withInput()
-                ->with('error', 'El espacio seleccionado (' . $selectedSpace->code . ') ya se encuentra ocupado.');
-        }
-
-        DB::transaction(function () use ($request, $selectedSpace) {
+        DB::transaction(function () use ($request) {
             ParkingRecord::create($request->all());
 
+            $selectedSpace = Space::findOrFail($request->space_id);
             $selectedSpace->status = 'OCCUPIED';
             $selectedSpace->save();
         });
@@ -76,9 +53,6 @@ class ParkingRecordController extends Controller
             ->with('success', 'Registro creado correctamente.');
     }
 
-    /**
-     * Mostrar el formulario de edición.
-     */
     public function edit(string $id)
     {
         $parkingRecord = ParkingRecord::findOrFail($id);
@@ -86,17 +60,9 @@ class ParkingRecordController extends Controller
         $users = User::all();
         $spaces = Space::all();
 
-        return view('parking_records.edit', compact(
-            'parkingRecord',
-            'vehicles',
-            'users',
-            'spaces'
-        ));
+        return view('parking_records.edit', compact('parkingRecord', 'vehicles', 'users', 'spaces'));
     }
 
-    /**
-     * Actualizar un registro.
-     */
     public function update(Request $request, string $id)
     {
         $parkingRecord = ParkingRecord::findOrFail($id);
@@ -117,73 +83,41 @@ class ParkingRecordController extends Controller
             ->with('success', 'Registro actualizado correctamente.');
     }
 
-    /**
-     * Eliminar un registro.
-     */
     public function destroy(string $id)
     {
         $parkingRecord = ParkingRecord::findOrFail($id);
-
         $parkingRecord->delete();
 
         return redirect()->route('parking-records.index')
             ->with('success', 'Registro eliminado correctamente.');
     }
 
+    /**
+     * Procesar la salida del vehículo.
+     */
     public function checkout(string $id)
     {
-        DB::transaction(function () use ($id) {
-            $record = ParkingRecord::findOrFail($id);
+        $record = ParkingRecord::findOrFail($id);
 
-            if ($record->status === 'COMPLETED') {
-                return redirect()->route('parking-records.index')
-                    ->with('error', 'Este vehículo ya tiene registrada su salida.');
-            }
+        if ($record->status === 'COMPLETED') {
+            return redirect()->route('parking-records.index')
+                ->with('error', 'Este vehículo ya tiene registrada su salida.');
+        }
 
+        DB::transaction(function () use ($record) {
             $now = Carbon::now();
-            $entryTime = Carbon::parse($record->entry_time);
+            $totalAmount = $this->calculateParkingFee($record, $now);
 
-            // Calcular minutos transcurridos (mínimo 1 minuto)
-            $minutes = max(1, $entryTime->diffInMinutes($now));
-
-            // Obtener la tarifa buscando el tipo de vehículo asociado al espacio
-            $ratePerMinute = 0;
-            if ($record->space && $record->space->vehicle_type_id) {
-                $vehicleType = DB::table('vehicle_types')->where('id', $record->space->vehicle_type_id)->first();
-                if ($vehicleType) {
-                    $ratePerMinute = $vehicleType->rate_per_minute;
-                }
-            }
-
-            $totalAmount = $minutes * $ratePerMinute;
-
-            // 1. Calcular el monto total
-            $totalAmount = $minutes * $ratePerMinute;
-
-            // 2. AGREGAR ESTA VALIDACIÓN DE SEGURIDAD (Para evitar desbordamiento decimal)
-            // El máximo permitido por DECIMAL(10,2) es 99999999.99
-            $maxLimit = 99999999.99;
-            if ($totalAmount > $maxLimit) {
-                $totalAmount = $maxLimit;
-            }
-
-            // 3. Actualizar el registro (Línea 136 de tu captura)
             $record->update([
                 'exit_time' => $now,
                 'total_amount' => $totalAmount,
                 'status' => 'COMPLETED'
             ]);
 
-            // Actualizar el registro
-            $record->update([
-                'exit_time' => $now,
-                'total_amount' => $totalAmount,
-                'status' => 'COMPLETED'
-            ]);
-
-            // Liberar el espacio (Cambiar estado de OCCUPIED a FREE)
+            // Liberar el espacio de forma directa para evitar problemas de MassAssignment
             if ($record->space) {
-                $record->space->update(['status' => 'FREE']);
+                $record->space->status = 'FREE';
+                $record->space->save();
             }
         });
 
@@ -191,22 +125,67 @@ class ParkingRecordController extends Controller
             ->with('success', 'Salida registrada correctamente. Tarifa calculada.');
     }
 
-    /**
-     * Generar reporte en PDF de los registros actuales (Solo ADMIN).
-     */
     public function generatePdfReport()
     {
-        // Traemos todos los registros con sus relaciones para el reporte
         $parkingRecords = ParkingRecord::with(['vehicle', 'user', 'space'])->get();
-        
-        // Contadores básicos para el encabezado del reporte
         $totalRecords = $parkingRecords->count();
         $totalRevenue = $parkingRecords->sum('total_amount');
 
-        // Cargamos una vista exclusiva para el diseño del PDF
         $pdf = Pdf::loadView('parking_records.report-pdf', compact('parkingRecords', 'totalRecords', 'totalRevenue'));
         
-        // Descarga el archivo automáticamente con la fecha actual
         return $pdf->download('reporte-parqueadero-' . date('Y-m-d') . '.pdf');
+    }
+
+    /*
+    | MÉTODOS PRIVADOS DE SOPORTE (Modularizado)
+    */
+
+    private function getSpaceMetrics(): array
+    {
+        return [
+            'totalSpaces'    => Space::count(),
+            'occupiedSpaces' => Space::where('status', 'OCCUPIED')->count(),
+            'freeSpaces'     => Space::where('status', 'FREE')->count(),
+        ];
+    }
+
+    /**
+     * Valida si el parqueadero está lleno o si el espacio seleccionado no está libre.
+     */
+    private function validateSpaceAvailability(int $spaceId): ?string
+    {
+        if (Space::where('status', 'FREE')->count() === 0) {
+            return 'No es posible registrar el ingreso: El parqueadero está lleno.';
+        }
+
+        $selectedSpace = Space::findOrFail($spaceId);
+        if ($selectedSpace->status !== 'FREE') {
+            return 'El espacio seleccionado (' . $selectedSpace->code . ') ya se encuentra ocupado.';
+        }
+
+        return null;
+    }
+
+    /**
+     * Calcula la tarifa final basándose en el tiempo transcurrido y tipo de vehículo.
+     */
+    private function calculateParkingFee(ParkingRecord $record, Carbon $now): float
+    {
+        $entryTime = Carbon::parse($record->entry_time);
+        $minutes = max(1, $entryTime->diffInMinutes($now));
+
+        $ratePerMinute = 0;
+        if ($record->space && $record->space->vehicle_type_id) {
+            $vehicleType = DB::table('vehicle_types')->where('id', $record->space->vehicle_type_id)->first();
+            if ($vehicleType) {
+                $ratePerMinute = $vehicleType->rate_per_minute;
+            }
+        }
+
+        $totalAmount = $minutes * $ratePerMinute;
+
+        // Límite de seguridad para evitar desbordamiento en DECIMAL(10,2)
+        $maxLimit = 99999999.99;
+        return min($totalAmount, $maxLimit);
     }
 }
