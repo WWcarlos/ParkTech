@@ -4,7 +4,7 @@ Cypress.Commands.add('loginAdmin', () => {
 
     cy.get('#email').type('admin@parking.com')
 
-    cy.get('#password').type('admin123')
+    cy.get('#password').type('12345678')
 
     cy.contains('Log in').click()
 
