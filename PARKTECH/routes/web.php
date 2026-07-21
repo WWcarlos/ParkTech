@@ -51,6 +51,7 @@ Route::middleware(['auth', 'role:ADMIN'])->group(function () {
     Route::resource('users', UserController::class);
     Route::resource('spaces', SpaceController::class);
     Route::resource('vehicle_types', VehicleTypeController::class);
+    Route::get('/parking-records/report/pdf', [ParkingRecordController::class, 'generatePdfReport'])->name('parking-records.report-pdf');
 
 });
 
