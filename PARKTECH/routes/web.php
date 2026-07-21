@@ -51,20 +51,23 @@ Route::middleware(['auth', 'role:ADMIN'])->group(function () {
     Route::resource('users', UserController::class);
     Route::resource('spaces', SpaceController::class);
     Route::resource('vehicle_types', VehicleTypeController::class);
+    Route::get('/parking-records/report/pdf', [ParkingRecordController::class, 'generatePdfReport'])->name('parking-records.report-pdf');
 
 });
 
 
 // ==========================
-// ADMIN Y OPERADOR
+// TODOS
 // ==========================
 
-Route::middleware(['auth', 'role:ADMIN,OPERADOR'])->group(function () {
+Route::middleware(['auth', 'role:ADMIN,OPERADOR,USER'])->group(function () {
 
     Route::resource('vehicles', VehicleController::class);
     Route::resource('parking-records', ParkingRecordController::class);
+    Route::put('/parking-records/{id}/checkout', [ParkingRecordController::class, 'checkout'])->name('parking-records.checkout');
 
 });
+
 
 
 require __DIR__.'/auth.php';
