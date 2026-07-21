@@ -12,6 +12,7 @@
 <div class="container mt-5">
 
     <div class="card shadow">
+
         <div class="card-header bg-primary text-white">
             <h3 class="mb-0">Gestión de Registros de Parqueo</h3>
         </div>
@@ -24,7 +25,14 @@
                 </div>
             @endif
 
-            <h5 class="mb-3">Nuevo Registro</h5>
+            <!-- Encabezado con botón de regreso -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0">Nuevo Registro</h5>
+
+                <a href="{{ route('dashboard') }}" class="btn btn-secondary">
+                    ← Volver al Dashboard
+                </a>
+            </div>
 
             <form action="{{ route('parking-records.store') }}" method="POST">
                 @csrf
@@ -71,7 +79,6 @@
 
                     <div class="col-md-3 mb-3">
                         <label>Estado</label>
-
                         <select name="status" class="form-control">
                             <option value="ACTIVE">ACTIVE</option>
                             <option value="COMPLETED">COMPLETED</option>
@@ -93,19 +100,17 @@
             <table class="table table-bordered table-hover mt-3">
 
                 <thead class="table-dark">
-
-                <tr>
-                    <th>ID</th>
-                    <th>Vehículo</th>
-                    <th>Usuario</th>
-                    <th>Espacio</th>
-                    <th>Entrada</th>
-                    <th>Salida</th>
-                    <th>Estado</th>
-                    <th>Total</th>
-                    <th width="170">Acciones</th>
-                </tr>
-
+                    <tr>
+                        <th>ID</th>
+                        <th>Vehículo</th>
+                        <th>Usuario</th>
+                        <th>Espacio</th>
+                        <th>Entrada</th>
+                        <th>Salida</th>
+                        <th>Estado</th>
+                        <th>Total</th>
+                        <th width="170">Acciones</th>
+                    </tr>
                 </thead>
 
                 <tbody>
@@ -132,19 +137,20 @@
 
                         <td>
 
-                            <a href="{{ route('parking-records.edit',$record->id) }}"
+                            <a href="{{ route('parking-records.edit', $record->id) }}"
                                class="btn btn-warning btn-sm">
                                 Editar
                             </a>
 
-                            <form action="{{ route('parking-records.destroy',$record->id) }}"
+                            <form action="{{ route('parking-records.destroy', $record->id) }}"
                                   method="POST"
                                   style="display:inline">
 
                                 @csrf
                                 @method('DELETE')
 
-                                <button class="btn btn-danger btn-sm">
+                                <button class="btn btn-danger btn-sm"
+                                        onclick="return confirm('¿Está seguro de eliminar este registro?')">
                                     Eliminar
                                 </button>
 
