@@ -13,6 +13,10 @@
 
     <h2 class="text-center mb-4">
         🚘 Configuración de Tipos de Vehículos
+
+        <a href="{{ route('dashboard') }}" class="btn btn-secondary">
+                    ← Volver al Dashboard
+                </a>
     </h2>
 
     {{-- Formulario --}}

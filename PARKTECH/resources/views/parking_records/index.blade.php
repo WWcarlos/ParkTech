@@ -155,7 +155,6 @@
             <table class="table table-bordered table-hover mt-3">
 
                 <thead class="table-dark">
-<<<<<<< HEAD
                     <tr>
                         <th>ID</th>
                         <th>Vehículo</th>
@@ -165,23 +164,8 @@
                         <th>Salida</th>
                         <th>Estado</th>
                         <th>Total</th>
-                        <th width="170">Acciones</th>
+                        <th width="250">Acciones</th>
                     </tr>
-=======
-
-                <tr>
-                    <th>ID</th>
-                    <th>Vehículo</th>
-                    <th>Usuario</th>
-                    <th>Espacio</th>
-                    <th>Entrada</th>
-                    <th>Salida</th>
-                    <th>Estado</th>
-                    <th>Total</th>
-                    <th width="250">Acciones</th>
-                </tr>
-
->>>>>>> 42dcddeaa0ac7a5995747f655b2d57e190311d10
                 </thead>
 
                 <tbody>
@@ -221,34 +205,21 @@
                             @endif
 
                             <a href="{{ route('parking-records.edit', $record->id) }}"
-<<<<<<< HEAD
-                               class="btn btn-warning btn-sm">
-=======
-                            class="btn btn-warning btn-sm">
->>>>>>> 42dcddeaa0ac7a5995747f655b2d57e190311d10
-                                Editar
-                            </a>
+                                class="btn btn-warning btn-sm">
+                                    Editar
+                                </a>
 
                             <form action="{{ route('parking-records.destroy', $record->id) }}"
-<<<<<<< HEAD
-                                  method="POST"
-                                  style="display:inline">
+      method="POST"
+      style="display:inline">
+    @csrf
+    @method('DELETE')
 
-                                @csrf
-                                @method('DELETE')
-
-                                <button class="btn btn-danger btn-sm"
-                                        onclick="return confirm('¿Está seguro de eliminar este registro?')">
-=======
-                                method="POST"
-                                style="display:inline">
-                                @csrf
-                                @method('DELETE')
-                                <button class="btn btn-danger btn-sm">
->>>>>>> 42dcddeaa0ac7a5995747f655b2d57e190311d10
-                                    Eliminar
-                                </button>
-                            </form>
+    <button class="btn btn-danger btn-sm"
+            onclick="return confirm('¿Está seguro de eliminar este registro?')">
+        Eliminar
+    </button>
+</form>
                         </td>
 
                     </tr>

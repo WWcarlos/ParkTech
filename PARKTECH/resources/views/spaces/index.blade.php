@@ -19,6 +19,9 @@
     <div class="card shadow mb-5">
         <div class="card-header bg-primary text-white">
             <h5 class="mb-0">Registrar Nuevo Espacio</h5>
+            <a href="{{ route('dashboard') }}" class="btn btn-secondary">
+                    ← Volver al Dashboard
+                </a>
         </div>
 
         <div class="card-body">
