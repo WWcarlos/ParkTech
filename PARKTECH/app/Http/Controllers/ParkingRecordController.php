@@ -9,13 +9,14 @@ use App\Models\Space;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class ParkingRecordController extends Controller
 {
     public function index()
     {
-        $parkingRecords = ParkingRecord::with(['vehicle', 'user', 'space'])->get();
+        $parkingRecords = ParkingRecord::with(['vehicle', 'user', 'space'])->paginate(10);
         $vehicles = Vehicle::all();
         $users = User::all();
         $spaces = Space::where('status', 'FREE')->get();
@@ -39,6 +40,14 @@ class ParkingRecordController extends Controller
         $validationError = $this->validateSpaceAvailability($request->space_id);
         if ($validationError) {
             return redirect()->back()->withInput()->with('error', $validationError);
+        }
+
+        $activeRecord = ParkingRecord::where('vehicle_id', $request->vehicle_id)
+            ->where('status', 'ACTIVE')
+            ->exists();
+
+        if ($activeRecord) {
+            return redirect()->back()->withInput()->with('error', 'El vehículo seleccionado ya se encuentra dentro del parqueadero y no ha registrado su salida.');
         }
 
         DB::transaction(function () use ($request) {
@@ -92,6 +101,8 @@ class ParkingRecordController extends Controller
             ->with('success', 'Registro eliminado correctamente.');
     }
 
+
+    
     /**
      * Procesar la salida del vehículo.
      */
@@ -119,7 +130,12 @@ class ParkingRecordController extends Controller
                 $record->space->status = 'FREE';
                 $record->space->save();
             }
+            Log::info("Salida registrada para el vehículo {$record->vehicle->plate}. Cobro: {$totalAmount}", [
+                    'user_id' => auth()->id(),
+                    'parking_record_id' => $record->id
+                ]); //Se encarga del atributo de calidad Logging
         });
+
 
         return redirect()->route('parking-records.index')
             ->with('success', 'Salida registrada correctamente. Tarifa calculada.');
@@ -188,4 +204,5 @@ class ParkingRecordController extends Controller
         $maxLimit = 99999999.99;
         return min($totalAmount, $maxLimit);
     }
+
 }
