@@ -221,6 +221,7 @@
                 </tbody>
 
             </table>
+            {{ $parkingRecords->links() }}
 
         </div>
 
